@@ -7,12 +7,16 @@
     <link rel="stylesheet" href="./src/styles/index.scss">
     <link rel="icon" href="./src/assets/favicon.png" type="image/png">
     <style>
+      .dg.ac {
+        display: none !important;
+      }
       body {
         overflow: hidden; /* Hide scrollbar */
         margin: 0;
         padding: 0;
         background-color: #07070c; /* Set background color */
         filter: url(#pixelate); /* Apply pixelate filter */
+        font-family: Arial, sans-serif; /* Set font to Arial */
       }
       .navbar {
         position: absolute;
@@ -47,14 +51,22 @@
         gap: 10px;
       }
       .footer-nav .dot {
-        width: 5px;
-        height: 5px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background-color: #555565;
         cursor: pointer;
+        transition: background-color 1s, opacity 1s;
       }
       .footer-nav .dot.active {
-        background-color: blue;
+        background-color: white;
+        opacity: 1;
+      }
+      .footer-nav .dot:not(.active) {
+        opacity: 0.5;
+      }
+      .footer-nav .dot:hover {
+        background-color: #aaa;
       }
       .section {
         position: absolute;
@@ -69,33 +81,71 @@
         color: white;
         text-align: center;
         z-index: 10000; /* Ensure sections are above the canvas */
-        background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        background: rgba(0, 0, 0, 0); /* Fully transparent background */
         pointer-events: none; /* Make sections click-through */
+        opacity: 0;
       }
       .section.active {
         display: flex;
+        pointer-events: none; /* Make active sections click-through */
+        opacity: 0; /* Start with 0 opacity for fade-in effect */
       }
       .section-content {
-        pointer-events: auto; /* Allow clicks on the content */
+        pointer-events: none; /* Make section content click-through */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       .title {
-        font-size: 48px;
-        margin-bottom: 20px;
+        font-size: 18px;
+        max-width: 600px;
+        line-height: 1.5;
+        text-align: center;
+        font-weight: 300;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
       }
       .subtext {
         font-size: 18px;
+        max-width: 600px;
+        line-height: 1.5;
+        text-align: center;
+        font-weight: 300;
         margin-bottom: 30px;
+        letter-spacing: 1px;
+      }
+      .domain {
+        font-size: 48px; /* Reduce font size for "JasonGodfrey.dev" */
+        font-weight: 700;
+        margin-bottom: 20px;
+        letter-spacing: 1px; /* Adjust letter spacing */
+        text-align: center;
+        word-wrap: break-word; /* Break the word if too long */
       }
       .button {
-        padding: 10px 20px;
-        background-color: #555565;
+        padding: 12px 24px;
+        background-color: transparent;
         color: white;
-        border: none;
+        border: 2px solid #555565;
         border-radius: 5px;
         cursor: pointer;
+        pointer-events: auto; /* Allow clicks on buttons */
+        transition: border-color 0.3s, color 0.3s;
       }
       .button:hover {
-        background-color: #777777;
+        border-color: white;
+        color: white;
+      }
+      .icon-button {
+        display: inline-block;
+        margin: 0 10px 20px 10px; /* Added bottom margin */
+        color: white;
+        font-size: 50px;
+        transition: color 0.3s;
+        pointer-events: auto; /* Allow clicks on icons */
+      }
+      .icon-button:hover {
+        color: #ccc;
       }
       /* SVG filter for pixelation */
       svg {
@@ -103,7 +153,53 @@
         width: 0;
         height: 0;
       }
+      /* Media Queries for Mobile Responsiveness */
+      @media (max-width: 768px) {
+        .title {
+          font-size: 16px;
+        }
+        .domain {
+          font-size: 36px;
+          letter-spacing: 0.5px; /* Adjust letter spacing for smaller screens */
+        }
+        .subtext {
+          font-size: 16px;
+          max-width: 90%;
+          line-height: 1.4;
+        }
+        .button {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+        .icon-button {
+          font-size: 40px;
+        }
+      }
+      @media (max-width: 480px) {
+        .title {
+          font-size: 14px;
+        }
+        .domain {
+          font-size: 28px;
+          letter-spacing: 0.5px; /* Adjust letter spacing for smaller screens */
+        }
+        .subtext {
+          font-size: 14px;
+          max-width: 80%;
+          line-height: 1.3;
+        }
+        .button {
+          padding: 8px 16px;
+          font-size: 12px;
+        }
+        .icon-button {
+          font-size: 30px;
+        }
+      }
     </style>
+    <!-- GSAP and ScrollTrigger from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D8V7189LVN"></script>
     <script>
@@ -113,36 +209,39 @@
 
       gtag('config', 'G-D8V7189LVN');
     </script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   </head>
   <body>
     <div class="navbar">
-      
+      <!-- Navbar content -->
     </div>
     <div class="section active" id="home">
       <div class="section-content">
-        <div class="title">Welcome to Pure Light</div>
-        <div class="subtext">Your journey into the world of light and color starts here.</div>
+        <div class="title">Welcome to</div>
+        <div class="domain">JASONGODFREY.DEV</div>
+        <div class="subtext">Step into the future of web experiences.</div>
         <button class="button" onclick="navigateTo('about')">About</button>
       </div>
     </div>
     <div class="section" id="about">
       <div class="section-content">
-        <div class="title">About Pure Light</div>
-        <div class="subtext">Learn more about what we do and our mission.</div>
-        <button class="button" onclick="navigateTo('projects')">Projects</button>
-      </div>
-    </div>
-    <div class="section" id="projects">
-      <div class="section-content">
-        <div class="title">Our Projects</div>
-        <div class="subtext">Discover the innovative projects we are working on.</div>
+        <div class="title">About</div>
+        <div class="subtext">
+          I am a full-stack software engineer specializing in creating immersive web and game experiences. My work blends innovation and creativity, bringing your digital visions to life.
+
+        </div>
         <button class="button" onclick="navigateTo('contact')">Contact</button>
       </div>
     </div>
     <div class="section" id="contact">
       <div class="section-content">
-        <div class="title">Contact Us</div>
-        <div class="subtext">Get in touch with us for more information or collaborations.</div>
+        <div class="title">Contact</div>
+        <div class="subtext">Get in touch for more information or collaborations.</div>
+        <div class="icons">
+          <a href="https://github.com/jasonygodfrey" target="_blank" class="icon-button"><i class="fab fa-github"></i></a>
+          <a href="https://www.linkedin.com/in/jasong7/" target="_blank" class="icon-button"><i class="fab fa-linkedin"></i></a>
+        </div>
         <button class="button" onclick="navigateTo('home')">Home</button>
       </div>
     </div>
@@ -151,27 +250,74 @@
       <div class="dots">
         <div class="dot active" onclick="navigateTo('home')"></div>
         <div class="dot" onclick="navigateTo('about')"></div>
-        <div class="dot" onclick="navigateTo('projects')"></div>
         <div class="dot" onclick="navigateTo('contact')"></div>
       </div>
     </div>
     <script>
-      function navigateTo(section) {
-        // Hide all sections
-        document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+      gsap.registerPlugin(ScrollTrigger);
 
-        // Show the target section
-        document.getElementById(section).classList.add('active');
+      let currentSectionIndex = 0;
+      const sections = document.querySelectorAll('.section');
+      const sectionIds = ['home', 'about', 'contact'];
+      let isScrolling = false;
 
-        // Update active dot
-        document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
-        document.querySelector(`.dot[onclick="navigateTo('${section}')"]`).classList.add('active');
+      function navigateTo(sectionId) {
+        const index = sectionIds.indexOf(sectionId);
+        if (index !== -1 && index !== currentSectionIndex) {
+          scrollToSection(index);
+        }
+      }
+
+      function scrollToSection(index) {
+        if (isScrolling) return;
+        isScrolling = true;
+
+        const currentSection = sections[currentSectionIndex];
+        const nextSection = sections[index];
+
+        gsap.to(currentSection, { opacity: 0, duration: 1, ease: "power2.inOut", onComplete: () => {
+          currentSection.classList.remove('active');
+          nextSection.classList.add('active');
+          gsap.to(nextSection, { opacity: 1, duration: 1, ease: "power2.inOut", onComplete: () => {
+            isScrolling = false;
+          } });
+        }});
+
+        currentSectionIndex = index;
+
+        updateNavigation();
+      }
+
+      function updateNavigation() {
+        document.querySelectorAll('.dot').forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentSectionIndex);
+        });
         
-        // Track page view
         gtag('config', 'G-D8V7189LVN', {
-          'page_path': `/${section}`
+          'page_path': `/${sectionIds[currentSectionIndex]}`
         });
       }
+
+      window.addEventListener('wheel', (event) => {
+        if (isScrolling) return;
+        
+        if (event.deltaY > 0) {
+          if (currentSectionIndex < sections.length - 1) {
+            scrollToSection(currentSectionIndex + 1);
+          }
+        } else {
+          if (currentSectionIndex > 0) {
+            scrollToSection(currentSectionIndex - 1);
+          }
+        }
+      });
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const firstSection = sections[0];
+        firstSection.style.display = 'flex';
+        gsap.to(firstSection, { opacity: 1, duration: 1, ease: "power2.inOut", onStart: () => firstSection.classList.add('active') });
+        updateNavigation(); // Ensure correct navigation dot is shown on load
+      });
     </script>
     <script src="./src/scripts/app.js"></script>
     <svg>

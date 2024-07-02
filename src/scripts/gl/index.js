@@ -58,6 +58,7 @@ export default new class {
     this.setGui();
     this.createFBO();
     this.createScreenQuad();
+    this.hideGui(); // Hide the GUI
   }
 
   addCanvas() {
@@ -71,13 +72,20 @@ export default new class {
     Events.on('resize', this.resize.bind(this));
   }
 
+  hideGui() {
+    const guiElement = document.querySelector('.dg.ac');
+    if (guiElement) {
+      guiElement.style.display = 'none';
+    }
+  }
+
   setGui() {
     this.tweaks = {
       pointSize: 1.2,
       speed: 0.3,
       curlFreq: 0.25,
       opacity: 0.35,
-      color1: [1.0, 1.0, 0.0], // Red
+      color1: [1.0, 1.0, 0.0], // Yellow
       color2: [0.0, 0.0, 1.0], // Blue
     };
 
@@ -205,6 +213,9 @@ export default new class {
     this.time = this.clock.getElapsedTime();
 
     this.fbo.update(this.time);
+
+    // Update the uTime uniform for the render material
+    this.renderMaterial.uniforms.uTime.value = this.time;
 
     this.fullScreenQuad.material.uniforms.uTime.value = this.time;
 

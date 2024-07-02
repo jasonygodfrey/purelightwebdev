@@ -37,19 +37,22 @@ void main() {
   vec3 curlPos = texture2D(positions, uv).rgb;
   vec3 finalPos = vec3(0.0);
 
+  // Oscillate the curl frequency 3x slower
+  float oscillatingCurlFreq = uCurlFreq * (1.0 + 0.5 * sin(uTime / 9.0));
+
   // Move the particles here
-  pos = curl(pos * uCurlFreq + t);
+  pos = curl(pos * oscillatingCurlFreq + t);
 
   // Apply a triangular movement pattern
   float angle = mod(t, PI * 2.0) * 3.0; // Adjust the multiplier to control the speed and direction
   vec3 axis = vec3(0.0, 1.0, 0.0); // Rotate around the Y-axis
   pos = rotate(pos, axis, angle);
 
-  curlPos = curl(curlPos * uCurlFreq + t);
-  curlPos += curl(curlPos * uCurlFreq * 2.0) * 0.5;
-  curlPos += curl(curlPos * uCurlFreq * 4.0) * 0.25;
-  curlPos += curl(curlPos * uCurlFreq * 8.0) * 0.125;
-  curlPos += curl(pos * uCurlFreq * 16.0) * 0.0625;
+  curlPos = curl(curlPos * oscillatingCurlFreq + t);
+  curlPos += curl(curlPos * oscillatingCurlFreq * 2.0) * 0.5;
+  curlPos += curl(curlPos * oscillatingCurlFreq * 4.0) * 0.25;
+  curlPos += curl(curlPos * oscillatingCurlFreq * 8.0) * 0.125;
+  curlPos += curl(pos * oscillatingCurlFreq * 16.0) * 0.0625;
 
   finalPos = mix(pos, curlPos, noise(pos + t));
   
