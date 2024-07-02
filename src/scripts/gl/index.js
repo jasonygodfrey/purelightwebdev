@@ -49,7 +49,10 @@ export default new class {
     this.clock = new THREE.Clock();
     this.time = null;
 
-    this.init();
+    // Delay the initialization of the scene
+    setTimeout(() => {
+      this.init();
+    }, 100);
   }
 
   init() {
