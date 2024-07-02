@@ -175,6 +175,12 @@ export default new class {
     this.fbo = new FBO(width, height, this.renderer, this.simMaterial, this.renderMaterial);
     // Add the particles to the scene
     this.scene.add(this.fbo.particles);
+
+    // Check framebuffer completeness
+    const status = this.renderer.getContext().checkFramebufferStatus(this.renderer.getContext().FRAMEBUFFER);
+    if (status !== this.renderer.getContext().FRAMEBUFFER_COMPLETE) {
+      console.error('Framebuffer is not complete:', status);
+    }
   }
 
   createScreenQuad() {
