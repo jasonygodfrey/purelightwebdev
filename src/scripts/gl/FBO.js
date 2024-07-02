@@ -45,7 +45,29 @@ export default class FBO {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBFormat, // Or RGBAFormat instead (to have a color for each particle, for example)
       type: THREE.FloatType // Important because we need precise coordinates (not ints)
-    });    
+    });
+
+    // Check framebuffer completeness
+    const gl = this.renderer.getContext();
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status !== gl.FRAMEBUFFER_COMPLETE) {
+      switch (status) {
+        case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_INCOMPLETE_ATTACHMENT');
+          break;
+        case gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT');
+          break;
+        case gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_INCOMPLETE_DIMENSIONS');
+          break;
+        case gl.FRAMEBUFFER_UNSUPPORTED:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_UNSUPPORTED');
+          break;
+        default:
+          console.error('Framebuffer incomplete: ' + status);
+      }
+    }
   }
 
   simSetup() {

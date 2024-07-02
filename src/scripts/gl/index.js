@@ -180,6 +180,19 @@ export default new class {
           console.error('Framebuffer incomplete: ' + status);
       }
     }
+
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    if (debugInfo) {
+      const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      console.log('Vendor:', vendor);
+      console.log('Renderer:', renderer);
+    }
+
+    const ext = gl.getExtension('OES_texture_float');
+    if (!ext) {
+      console.error('OES_texture_float extension not supported');
+    }
   }
 
   createScreenQuad() {
