@@ -3,13 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Circurl</title>
+    <title>Pure Light</title>
     <link rel="stylesheet" href="./src/styles/index.scss">
+    <link rel="icon" href="./src/assets/favicon.png" type="image/png">
     <style>
       body {
         overflow: hidden; /* Hide scrollbar */
         margin: 0;
         padding: 0;
+        background-color: #07070c; /* Set background color */
+        filter: url(#pixelate); /* Apply pixelate filter */
       }
       .navbar {
         position: absolute;
@@ -21,6 +24,7 @@
         font-weight: bold;
         color: white;
         z-index: 9999;
+        pointer-events: auto; /* Ensure navbar is always clickable */
       }
       .footer-nav {
         position: fixed;
@@ -29,11 +33,12 @@
         width: 100%;
         text-align: center;
         z-index: 9999;
+        pointer-events: auto; /* Ensure footer-nav is always clickable */
       }
       .footer-nav .line {
         width: 100%;
-        height: 2px;
-        background-color: white;
+        height: 1px;
+        background-color: #555565;
         margin-bottom: 10px;
       }
       .footer-nav .dots {
@@ -42,14 +47,61 @@
         gap: 10px;
       }
       .footer-nav .dot {
-        width: 10px;
-        height: 10px;
+        width: 5px;
+        height: 5px;
         border-radius: 50%;
-        background-color: white;
+        background-color: #555565;
         cursor: pointer;
       }
       .footer-nav .dot.active {
         background-color: blue;
+      }
+      .section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        z-index: 10000; /* Ensure sections are above the canvas */
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        pointer-events: none; /* Make sections click-through */
+      }
+      .section.active {
+        display: flex;
+      }
+      .section-content {
+        pointer-events: auto; /* Allow clicks on the content */
+      }
+      .title {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+      .subtext {
+        font-size: 18px;
+        margin-bottom: 30px;
+      }
+      .button {
+        padding: 10px 20px;
+        background-color: #555565;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .button:hover {
+        background-color: #777777;
+      }
+      /* SVG filter for pixelation */
+      svg {
+        position: absolute;
+        width: 0;
+        height: 0;
       }
     </style>
     <!-- Google tag (gtag.js) -->
@@ -64,7 +116,35 @@
   </head>
   <body>
     <div class="navbar">
-      jason godfrey
+      
+    </div>
+    <div class="section active" id="home">
+      <div class="section-content">
+        <div class="title">Welcome to Pure Light</div>
+        <div class="subtext">Your journey into the world of light and color starts here.</div>
+        <button class="button" onclick="navigateTo('about')">About</button>
+      </div>
+    </div>
+    <div class="section" id="about">
+      <div class="section-content">
+        <div class="title">About Pure Light</div>
+        <div class="subtext">Learn more about what we do and our mission.</div>
+        <button class="button" onclick="navigateTo('projects')">Projects</button>
+      </div>
+    </div>
+    <div class="section" id="projects">
+      <div class="section-content">
+        <div class="title">Our Projects</div>
+        <div class="subtext">Discover the innovative projects we are working on.</div>
+        <button class="button" onclick="navigateTo('contact')">Contact</button>
+      </div>
+    </div>
+    <div class="section" id="contact">
+      <div class="section-content">
+        <div class="title">Contact Us</div>
+        <div class="subtext">Get in touch with us for more information or collaborations.</div>
+        <button class="button" onclick="navigateTo('home')">Home</button>
+      </div>
     </div>
     <div class="footer-nav">
       <div class="line"></div>
@@ -77,8 +157,12 @@
     </div>
     <script>
       function navigateTo(section) {
-        // Implement navigation logic here
-        console.log('Navigating to:', section);
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+
+        // Show the target section
+        document.getElementById(section).classList.add('active');
+
         // Update active dot
         document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
         document.querySelector(`.dot[onclick="navigateTo('${section}')"]`).classList.add('active');
@@ -90,5 +174,13 @@
       }
     </script>
     <script src="./src/scripts/app.js"></script>
+    <svg>
+      <filter id="pixelate" x="0" y="0">
+        <feFlood x="8" y="8" height="8" width="8"/> <!-- Increased values for more pixelation -->
+        <feComposite width="8" height="8"/> <!-- Increased values for more pixelation -->
+        <feTile result="a"/>
+        <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      </filter>
+    </svg>
   </body>
 </html>

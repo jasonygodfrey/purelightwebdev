@@ -26,15 +26,15 @@ export default new class {
     });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.setSize(store.bounds.ww, store.bounds.wh);
-    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.setClearColor(0x07070c, 1); // Set background color to #07070c
 
     this.camera = new THREE.PerspectiveCamera(
       45,
       store.bounds.ww / store.bounds.wh,
-      0.1,
+       0.1,
       1000
     );
-    this.camera.position.set(0, 0, 4);
+    this.camera.position.set(0, 0, 2.5);
 
     this.scene = new THREE.Scene();
 
@@ -42,6 +42,9 @@ export default new class {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
+    this.controls.minDistance = 2.5;
+    this.controls.maxDistance = 2.5;
+    this.controls.zoomSpeed = 0.5;
 
     this.clock = new THREE.Clock();
     this.time = null;
@@ -74,6 +77,8 @@ export default new class {
       speed: 0.3,
       curlFreq: 0.25,
       opacity: 0.35,
+      color1: [1.0, 1.0, 0.0], // Red
+      color2: [0.0, 0.0, 1.0], // Blue
     };
 
     GUI.add(this.tweaks, 'pointSize', 1, 3, 0.1)
@@ -89,6 +94,18 @@ export default new class {
 
     GUI.add(this.tweaks, 'opacity', 0.1, 1.0, 0.01)
        .onChange(() => this.renderMaterial.uniforms.uOpacity.value = this.tweaks.opacity);
+
+    GUI.addColor(this.tweaks, 'color1')
+       .name('color 1')
+       .onChange(() => this.renderMaterial.uniforms.uColor1.value.setRGB(
+         this.tweaks.color1[0], this.tweaks.color1[1], this.tweaks.color1[2]
+       ));
+
+    GUI.addColor(this.tweaks, 'color2')
+       .name('color 2')
+       .onChange(() => this.renderMaterial.uniforms.uColor2.value.setRGB(
+         this.tweaks.color2[0], this.tweaks.color2[1], this.tweaks.color2[2]
+       ));
   }
 
   createFBO() {
@@ -139,6 +156,8 @@ export default new class {
         uTime: { value: 0 },
         uPointSize: { value: this.tweaks.pointSize },
         uOpacity: { value: this.tweaks.opacity },
+        uColor1: { value: new THREE.Color(...this.tweaks.color1) },
+        uColor2: { value: new THREE.Color(...this.tweaks.color2) },
       },
       transparent: true,
       blending: THREE.AdditiveBlending
