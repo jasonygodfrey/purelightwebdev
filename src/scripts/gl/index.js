@@ -1,21 +1,15 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
 import { Events } from '../events';
-
 import store from '../store';
-
 import FBO from './FBO';
-
 import simVertex from './shaders/simulation.vert';
 import simFragment from './shaders/simulation.frag';
 import particlesVertex from './shaders/particles.vert';
 import particlesFragment from './shaders/particles.frag';
 import fullScreenVertex from './shaders/fullscreen.vert';
 import fullScreenFragment from './shaders/fullscreen.frag';
-
 import { getRandomSpherePoint } from '../utils';
-
 import GUI from '../gui';
 
 export default new class {
