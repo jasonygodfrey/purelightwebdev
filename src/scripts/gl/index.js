@@ -117,32 +117,20 @@ export default new class {
   }
 
   createFBO() {
-    // width and height of FBO
     const width = 512;
     const height = 512;
-
-    // Populate a Float32Array of random positions
     let length = width * height * 3;
     let data = new Float32Array(length);
     for (let i = 0; i < length; i += 3) {
-      // Random positions inside a sphere
       const point = getRandomSpherePoint();
       data[i + 0] = point.x;
       data[i + 1] = point.y;
-      data[i + 2] = point.z;      
-
-      // // Replaced with this if you want 
-      // // random positions inside a cube
-      // data[i + 0] = Math.random() - 0.5;
-      // data[i + 1] = Math.random() - 0.5;
-      // data[i + 2] = Math.random() - 0.5;      
+      data[i + 2] = point.z;
     }
 
-    // Convert the data to a FloatTexture
     const positions = new THREE.DataTexture(data, width, height, THREE.RGBFormat, THREE.FloatType);
     positions.needsUpdate = true;
 
-    // Simulation shader material used to update the particles' positions
     this.simMaterial = new THREE.ShaderMaterial({
       vertexShader: simVertex,
       fragmentShader: simFragment,
@@ -154,8 +142,6 @@ export default new class {
       },
     });
 
-    // Render shader material to display the particles on screen
-    // the positions uniform will be set after the this.fbo.update() call
     this.renderMaterial = new THREE.ShaderMaterial({
       vertexShader: particlesVertex,
       fragmentShader: particlesFragment,
@@ -171,15 +157,28 @@ export default new class {
       blending: THREE.AdditiveBlending
     });
 
-    // Initialize the FBO
     this.fbo = new FBO(width, height, this.renderer, this.simMaterial, this.renderMaterial);
-    // Add the particles to the scene
     this.scene.add(this.fbo.particles);
 
-    // Check framebuffer completeness
-    const status = this.renderer.getContext().checkFramebufferStatus(this.renderer.getContext().FRAMEBUFFER);
-    if (status !== this.renderer.getContext().FRAMEBUFFER_COMPLETE) {
-      console.error('Framebuffer is not complete:', status);
+    const gl = this.renderer.getContext();
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status !== gl.FRAMEBUFFER_COMPLETE) {
+      switch (status) {
+        case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_INCOMPLETE_ATTACHMENT');
+          break;
+        case gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT');
+          break;
+        case gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_INCOMPLETE_DIMENSIONS');
+          break;
+        case gl.FRAMEBUFFER_UNSUPPORTED:
+          console.error('Framebuffer incomplete: FRAMEBUFFER_UNSUPPORTED');
+          break;
+        default:
+          console.error('Framebuffer incomplete: ' + status);
+      }
     }
   }
 
